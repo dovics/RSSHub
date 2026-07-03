@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio';
 import { destr } from 'destr';
 import { raw } from 'hono/html';
 import { renderToString } from 'hono/jsx/dom/server';
+import type { JSX } from 'hono/jsx/jsx-runtime';
 
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
@@ -95,7 +96,7 @@ const renderSubpages = (subpages): string =>
                         break;
                     }
                     case 'video_block': {
-                        const videoId = page.source?.split('&')[0];
+                        const videoId = page.source?.split('&', 1)[0];
                         blocks.push(
                             <iframe
                                 key={`video-${index}`}

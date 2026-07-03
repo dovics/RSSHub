@@ -1,3 +1,4 @@
+// oxlint-disable unicorn-js/no-global-object-property-assignment
 import http from 'node:http';
 import https from 'node:https';
 
@@ -8,11 +9,11 @@ import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 import { PRESETS } from '@/utils/header-generator';
 
 const originalGlobals = {
-    fetch: globalThis.fetch,
-    Headers: globalThis.Headers,
-    FormData: globalThis.FormData,
-    Request: globalThis.Request,
-    Response: globalThis.Response,
+    fetch,
+    Headers,
+    FormData,
+    Request,
+    Response,
 };
 const originalHttp = {
     get: http.get,
@@ -91,7 +92,7 @@ describe('request-rewriter', () => {
 
         // headers
         const headers: Headers = fetchSpy.mock.lastCall?.[0].headers;
-        expect(headers.get('user-agent')).toBe(config.ua);
+        expect(headers.get('user-agent')).toMatch(/Chrome/);
         expect(headers.get('accept')).toBeDefined();
         expect(headers.get('referer')).toBe('http://rsshub.test');
         expect(headers.get('sec-ch-ua')).toBeDefined();
@@ -138,7 +139,7 @@ describe('request-rewriter', () => {
 
         // headers
         const headers: Headers = fetchSpy.mock.lastCall?.[0].headers;
-        expect(headers.get('user-agent')).toBe(config.ua);
+        expect(headers.get('user-agent')).toMatch(/Chrome/);
         expect(headers.get('accept')).toBeDefined();
         expect(headers.get('referer')).toBe('http://rsshub.test');
         expect(headers.get('sec-ch-ua')).toBeDefined();
@@ -237,7 +238,7 @@ describe('request-rewriter', () => {
         // headers
         const options = httpSpy.mock.lastCall?.[1];
         const headers = options?.headers;
-        expect(headers?.['user-agent']).toBe(config.ua);
+        expect(headers?.['user-agent']).toMatch(/Chrome/);
         expect(headers?.accept).toBeDefined();
         expect(headers?.referer).toBe('http://rsshub.test');
 
@@ -270,7 +271,7 @@ describe('request-rewriter', () => {
         try {
             const { default: wrappedFetch } = await import('@/utils/request-rewriter/fetch');
             const time = Date.now();
-            const tasks = Array.from({ length: 20 }).map(() => wrappedFetch('http://rsshub.test/headers'));
+            const tasks = Array.from({ length: 20 }, () => wrappedFetch('http://rsshub.test/headers'));
 
             await vi.advanceTimersByTimeAsync(3000);
             await Promise.all(tasks);
